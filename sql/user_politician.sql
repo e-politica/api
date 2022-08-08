@@ -1,0 +1,2 @@
+user_id
+politician_id
