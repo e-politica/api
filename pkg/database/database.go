@@ -24,7 +24,11 @@ type Db struct {
 	Conn       *pgx.Conn
 }
 
-func New() (db *Db) {
+func New(ctx *context.Context) *Db {
+	db := &Db{
+		Once: &sync.Once{},
+		Ctx:  ctx,
+	}
 	err := db.Connect()
 	if err != nil {
 		log.Println("could not connect on the database", err)

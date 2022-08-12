@@ -38,7 +38,7 @@ func PostLoginDefault(db *database.Db) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to verify double submit 'g_csrf_token' cookie."})
 		}
 
-		err := repository.Login(c.Context(), *body.Credential)
+		_, err := repository.LoginGoogle(c.Context(), db, *body.Credential)
 		if err != nil {
 			log.Println(err)
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Error on login."})

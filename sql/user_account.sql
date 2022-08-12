@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS default_account (
+CREATE TABLE IF NOT EXISTS user_account (
     user_id uuid PRIMARY KEY default uuid_generate_v4(),
     
     user_name CHARACTER varying(50) NOT NULL,

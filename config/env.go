@@ -11,8 +11,8 @@ var (
 
 	DbHost         = env.Get("DB_HOST", "localhost")
 	DbName         = env.Get("DB_NAME", "epolitica")
-	DbUser         = env.Get("DB_USER", "admin")
-	DbPassword     = env.Get("DB_PASSWORD", "admin")
+	DbUser         = env.Get("DB_USER", "postgres")
+	DbPassword     = env.Get("DB_PASSWORD", "")
 	DbPort         = env.Get("DB_PORT", "5432")
 	DbSslMode      = env.Get("DB_SSLMODE", "require")
 	DbReconnectSec = env.Get("DB_RECONNECT_SEC", 10)

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/e-politica/api/config"
@@ -9,7 +11,8 @@ import (
 )
 
 func main() {
-	db := database.New()
+	ctx := context.Background()
+	db := database.New(&ctx)
 	defer db.Conn.Close(*db.Ctx)
 	go db.LoopCheckConnection()
 
@@ -17,7 +20,7 @@ func main() {
 
 	// ------------------* Temporary *------------------ //
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("../layout_rascunho/index.html")
+		return c.SendFile("../layout_rascunho/rascunho2/login.html")
 	})
 	// ------------------* Temporary *------------------ //
 
