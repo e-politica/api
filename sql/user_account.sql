@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS user_account (
     
     user_name CHARACTER varying(50) NOT NULL,
     user_email CHARACTER varying(150) UNIQUE NOT NULL,
-    user_avatar_url CHARACTER varying(500) NOT NULL,
+    user_picture_url CHARACTER varying(500) NOT NULL,
 
     -- [default | google]
     user_account_type CHARACTER varying(20) NOT NULL,

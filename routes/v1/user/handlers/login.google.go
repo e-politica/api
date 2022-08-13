@@ -18,30 +18,30 @@ func PostLoginGoogle(db *database.Db) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		csrfCookie := c.Request().Header.Cookie("g_csrf_token")
 		if csrfCookie == nil {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Missing 'g_csrf_token' cookie."})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing 'g_csrf_token' cookie"})
 		}
 
-		body := new(params)
-		if err := c.BodyParser(body); err != nil {
+		var body params
+		if err := c.BodyParser(&body); err != nil {
 			log.Println(err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Could not parse request body."})
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "could not parse request body"})
 		}
 
 		if body.Credential == nil {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Missing 'credential' field in body."})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing 'credential' field in body"})
 		}
 		if body.CsrfToken == nil {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Missing 'g_csrf_token' field in body."})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing 'g_csrf_token' field in body"})
 		}
 
 		if *body.CsrfToken != string(csrfCookie) {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Failed to verify double submit 'g_csrf_token' cookie."})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "failed to verify double submit 'g_csrf_token' cookie"})
 		}
 
 		_, err := repository.LoginGoogle(c.Context(), db, *body.Credential)
 		if err != nil {
 			log.Println(err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "Error on login."})
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		return c.SendStatus(http.StatusOK)

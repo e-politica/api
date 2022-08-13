@@ -9,6 +9,11 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	tokenPrefix  = "token:"
+	userIdPrefix = "user-id:"
+)
+
 var client = redis.NewClient(&redis.Options{
 	Addr:     config.RedisAddr,
 	Password: config.RedisPassword,
@@ -20,7 +25,7 @@ func NewSession(ctx context.Context, userId string) (token string, err error) {
 
 	err = client.Set(
 		ctx,
-		token,
+		tokenPrefix+token,
 		userId,
 		time.Until(time.Now().Add(config.RedisSessionDurationHour)),
 	).Err()
@@ -30,7 +35,7 @@ func NewSession(ctx context.Context, userId string) (token string, err error) {
 
 	err = client.Set(
 		ctx,
-		userId,
+		userIdPrefix+userId,
 		token,
 		time.Until(time.Now().Add(config.RedisSessionDurationHour)),
 	).Err()
@@ -41,13 +46,13 @@ func NewSession(ctx context.Context, userId string) (token string, err error) {
 func GetSession(ctx context.Context, token string) (string, error) {
 	return client.Get(
 		ctx,
-		token,
+		tokenPrefix+token,
 	).Result()
 }
 
 func GetSessionToken(ctx context.Context, userId string) (string, error) {
 	return client.Get(
 		ctx,
-		userId,
+		userIdPrefix+userId,
 	).Result()
 }
