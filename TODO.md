@@ -1,10 +1,15 @@
 # TODO
 
 - [ ] Create database initial structure
+    - [X] User
+        - [X] Google account
+        - [X] Default account
+
 - [ ] Create pkg for api testing
 - [ ] Create pkg for better logs
 - [X] Solve double check of google login
-- [ ] Dynamic login using google
-- [ ] Login and Register system for normal accounts
+- [X] Dynamic login using google
+- [ ] Email verification for default accounts
+- [X] Login and Register system for normal accounts
 - [ ] Implement access token refresh system
-- [ ] guarantee personalized response messages
+- [ ] Guarantee personalized response messages

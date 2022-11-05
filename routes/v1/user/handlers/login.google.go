@@ -1,49 +1,39 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
-	"github.com/e-politica/api/pkg/database"
+	"github.com/e-politica/api/models/v1/user"
+	"github.com/e-politica/api/routes"
 	"github.com/e-politica/api/routes/v1/user/repository"
 	"github.com/gofiber/fiber/v2"
 )
 
-func PostLoginGoogle(db *database.Db) fiber.Handler {
-	type params struct {
-		Credential *string `form:"credential"`
-		CsrfToken  *string `form:"g_csrf_token"`
-	}
-
+func PostLoginGoogle(tools routes.Tools) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		csrfCookie := c.Request().Header.Cookie("g_csrf_token")
 		if csrfCookie == nil {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing 'g_csrf_token' cookie"})
 		}
 
-		var body params
-		if err := c.BodyParser(&body); err != nil {
-			log.Println(err)
+		var params user.LoginGoogle
+		if err := c.BodyParser(&params); err != nil {
+			tools.Logger.Error.Println(err)
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "could not parse request body"})
 		}
 
-		if body.Credential == nil {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing 'credential' field in body"})
-		}
-		if body.CsrfToken == nil {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "missing 'g_csrf_token' field in body"})
+		if err := params.Validate(csrfCookie); err != nil {
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		if *body.CsrfToken != string(csrfCookie) {
-			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "failed to verify double submit 'g_csrf_token' cookie"})
-		}
-
-		_, err := repository.LoginGoogle(c.Context(), db, *body.Credential)
+		session, err := repository.LoginGoogle(c.Context(), tools.Db, *params.Credential)
 		if err != nil {
-			log.Println(err)
+			if err != repository.ErrInvalidJwt {
+				tools.Logger.Error.Println(err)
+			}
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.SendStatus(http.StatusOK)
+		return c.Status(http.StatusOK).JSON(session)
 	}
 }

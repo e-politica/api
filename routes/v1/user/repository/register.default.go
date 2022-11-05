@@ -13,7 +13,7 @@ var (
 	ErrExistentAccount = errors.New("the requested account already exists")
 )
 
-func RegisterDefault(ctx context.Context, db *database.Db, params user.RegisterDefault) (token string, err error) {
+func RegisterDefault(ctx context.Context, db *database.Db, params user.RegisterDefault) (sess session.Session, err error) {
 	found, err := isUserRegistered(db, *params.Email)
 	if err != nil {
 		return

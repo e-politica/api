@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/e-politica/api/config"
 	"github.com/e-politica/api/pkg/database"
+	"github.com/e-politica/api/pkg/log"
+	"github.com/e-politica/api/routes"
 	v1 "github.com/e-politica/api/routes/v1"
 )
 
@@ -16,6 +19,13 @@ func main() {
 	defer db.Conn.Close(*db.Ctx)
 	go db.LoopCheckConnection()
 
+	logger := log.NewLogger(os.Stdout)
+
+	tools := routes.Tools{
+		Db:     db,
+		Logger: logger,
+	}
+
 	app := fiber.New(fiber.Config{})
 
 	// ------------------* Temporary *------------------ //
@@ -24,7 +34,7 @@ func main() {
 	})
 	// ------------------* Temporary *------------------ //
 
-	v1.SetRoutes(app.Group("/v1"), db)
+	v1.SetRoutes(app.Group("/v1"), tools)
 
 	err := app.Listen(":" + config.ServerPort)
 	if err != nil {

@@ -5,31 +5,6 @@ import (
 	"strconv"
 )
 
-func GetString(k, d string) string {
-	if v, found := os.LookupEnv(k); found {
-		return v
-	}
-	return d
-}
-
-func GetInt(k string, d int) int {
-	if v, found := os.LookupEnv(k); found {
-		if x, err := strconv.Atoi(v); err == nil {
-			return x
-		}
-	}
-	return d
-}
-
-func GetBool(k string, d bool) bool {
-	if v, found := os.LookupEnv(k); found {
-		if x, err := strconv.ParseBool(v); err == nil {
-			return x
-		}
-	}
-	return d
-}
-
 func Get[T any](k string, d T) T {
 	v, found := os.LookupEnv(k)
 	if !found {

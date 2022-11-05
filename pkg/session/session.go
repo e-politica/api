@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/e-politica/api/config"
@@ -10,8 +11,8 @@ import (
 )
 
 const (
-	tokenPrefix  = "token:"
-	userIdPrefix = "user-id:"
+	accessTokenPrefix = "access-token:"
+	userIdPrefix      = "user-id:"
 )
 
 var client = redis.NewClient(&redis.Options{
@@ -20,15 +21,22 @@ var client = redis.NewClient(&redis.Options{
 	DB:       config.RedisDB,
 })
 
-func NewSession(ctx context.Context, userId string) (token string, err error) {
-	token = uuid.NewString()
+type Session struct {
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiration   time.Time `json:"expiration"`
+}
 
-	err = client.Set(
-		ctx,
-		tokenPrefix+token,
-		userId,
-		time.Until(time.Now().Add(config.RedisSessionDurationHour)),
-	).Err()
+func NewSession(ctx context.Context, userId string) (session Session, err error) {
+	expiration := time.Now().Add(config.RedisSessionDurationHour)
+
+	session = Session{
+		AccessToken:  uuid.NewString(),
+		RefreshToken: uuid.NewString(),
+		Expiration:   expiration,
+	}
+
+	sessionJson, err := json.Marshal(&session)
 	if err != nil {
 		return
 	}
@@ -36,23 +44,39 @@ func NewSession(ctx context.Context, userId string) (token string, err error) {
 	err = client.Set(
 		ctx,
 		userIdPrefix+userId,
-		token,
-		time.Until(time.Now().Add(config.RedisSessionDurationHour)),
+		string(sessionJson),
+		time.Until(expiration),
+	).Err()
+	if err != nil {
+		return
+	}
+
+	err = client.Set(
+		ctx,
+		accessTokenPrefix+session.AccessToken,
+		userId,
+		time.Until(expiration),
 	).Err()
 
 	return
 }
 
-func GetSession(ctx context.Context, token string) (string, error) {
-	return client.Get(
-		ctx,
-		tokenPrefix+token,
-	).Result()
-}
-
-func GetSessionToken(ctx context.Context, userId string) (string, error) {
-	return client.Get(
+func GetSession(ctx context.Context, userId string) (session Session, err error) {
+	rawSession, err := client.Get(
 		ctx,
 		userIdPrefix+userId,
+	).Result()
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal([]byte(rawSession), &session)
+	return
+}
+
+func GetUserId(ctx context.Context, accessToken string) (userId string, err error) {
+	return client.Get(
+		ctx,
+		accessTokenPrefix+accessToken,
 	).Result()
 }

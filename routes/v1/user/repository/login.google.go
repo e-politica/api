@@ -16,8 +16,7 @@ import (
 )
 
 var (
-	ErrGoogleEmailNotVerified = errors.New("google email not verified")
-	ErrInvalidJwt             = errors.New("invalid jwt")
+	ErrInvalidJwt = errors.New("invalid jwt")
 )
 
 type googleJwtPayload struct {
@@ -37,7 +36,7 @@ type googleJwtPayload struct {
 	Jti           string `json:"jti"`
 }
 
-func LoginGoogle(ctx context.Context, db *database.Db, credentials string) (token string, err error) {
+func LoginGoogle(ctx context.Context, db *database.Db, credentials string) (sess session.Session, err error) {
 	payload, err := validateGoogleCredential(ctx, credentials)
 	if err != nil {
 		return
@@ -95,13 +94,13 @@ func validateGoogleCredential(ctx context.Context, credentials string) (payload 
 	return
 }
 
-func getUserSession(ctx context.Context, db *database.Db, email string) (token string, err error) {
+func getUserSession(ctx context.Context, db *database.Db, email string) (sess session.Session, err error) {
 	userId, err := getUserId(db, email)
 	if err != nil {
 		return
 	}
 
-	token, err = session.GetSessionToken(ctx, userId)
+	sess, err = session.GetSession(ctx, userId)
 	if err == redis.Nil {
 		return session.NewSession(ctx, userId)
 	}

@@ -7,13 +7,15 @@ import (
 	"github.com/e-politica/api/models/v1/user"
 	"github.com/e-politica/api/pkg/database"
 	"github.com/e-politica/api/pkg/session"
+	"github.com/go-redis/redis/v8"
 )
 
 var (
-	ErrInexistentAccount = errors.New("requested account does not exists")
+	ErrInexistentAccount  = errors.New("requested account does not exists")
+	ErrPasswordsDontMatch = errors.New("passwords do not match")
 )
 
-func LoginDefault(ctx context.Context, db *database.Db, params user.RegisterDefault) (token string, err error) {
+func LoginDefault(ctx context.Context, db *database.Db, params user.LoginDefault) (sess session.Session, err error) {
 	found, err := isUserRegistered(db, *params.Email)
 	if err != nil {
 		return
@@ -34,5 +36,15 @@ func LoginDefault(ctx context.Context, db *database.Db, params user.RegisterDefa
 		return
 	}
 
-	return session.NewSession(ctx, userId)
+	if *params.Password != password {
+		err = ErrPasswordsDontMatch
+		return
+	}
+
+	sess, err = session.GetSession(ctx, userId)
+	if err == redis.Nil {
+		return session.NewSession(ctx, userId)
+	}
+
+	return
 }
