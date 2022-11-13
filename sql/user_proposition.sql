@@ -1,5 +1,6 @@
 CREATE TABLE user_proposition
 (
+    up_id uuid PRIMARY KEY default uuid_generate_v4(),
     up_user_id uuid NOT NULL,
     up_proposition_id VARCHAR NOT NULL, 
 

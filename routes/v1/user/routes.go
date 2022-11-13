@@ -9,6 +9,7 @@ import (
 func SetRoutes(r fiber.Router, tools routes.Tools) {
 	r.Put("/", handlers.PutChangeInfo(tools))
 	r.Post("/register", handlers.PostRegisterDefault(tools))
+	r.Get("/follows", handlers.GetFollows(tools))
 
 	loginG := r.Group("/login")
 	loginG.Post("/", handlers.PostLoginDefault(tools))

@@ -23,10 +23,5 @@ var (
 	RedisDB                  = env.Get("REDIS_DB", 0)
 	RedisSessionDurationHour = time.Hour * time.Duration(env.Get("REDIS_SESSION_DURATION_HOUR", 24))
 
-	SmtpHost = env.Get("SMTP_HOST", "smtp.gmail.com")
-	SmtpPort = env.Get("SMTP_PORT", "587")
-	SmtpFrom = env.Get("SMTP_FROM", "no.reply.epolitica@gmail.com")
-	SmtpPass = env.Get("SMTP_PASS", "")
-
 	GoogleClientSecret = env.Get("GOOGLE_CLIENT_SECRET", "")
 )

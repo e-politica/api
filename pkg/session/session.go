@@ -3,10 +3,10 @@ package session
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/e-politica/api/config"
-	"github.com/e-politica/api/models/v1/user"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
@@ -17,6 +17,8 @@ const (
 	emailPrefix       = "email:"
 )
 
+var ErrSessionNotFound = errors.New("session not found")
+
 var client = redis.NewClient(&redis.Options{
 	Addr:     config.RedisAddr,
 	Password: config.RedisPassword,
@@ -24,18 +26,16 @@ var client = redis.NewClient(&redis.Options{
 })
 
 type Session struct {
-	AccessToken  string    `json:"access_token"`
-	RefreshToken string    `json:"refresh_token"`
-	Expiration   time.Time `json:"expiration"`
+	AccessToken string    `json:"access_token"`
+	Expiration  time.Time `json:"expiration"`
 }
 
 func NewSession(ctx context.Context, userId string) (session Session, err error) {
 	expiration := time.Now().Add(config.RedisSessionDurationHour)
 
 	session = Session{
-		AccessToken:  uuid.NewString(),
-		RefreshToken: uuid.NewString(),
-		Expiration:   expiration,
+		AccessToken: uuid.NewString(),
+		Expiration:  expiration,
 	}
 
 	sessionJson, err := json.Marshal(session)
@@ -69,6 +69,9 @@ func GetSession(ctx context.Context, userId string) (session Session, err error)
 		userIdPrefix+userId,
 	).Result()
 	if err != nil {
+		if err == redis.Nil {
+			err = ErrSessionNotFound
+		}
 		return
 	}
 
@@ -77,39 +80,13 @@ func GetSession(ctx context.Context, userId string) (session Session, err error)
 }
 
 func GetUserId(ctx context.Context, accessToken string) (userId string, err error) {
-	return client.Get(
+	userId, err = client.Get(
 		ctx,
 		accessTokenPrefix+accessToken,
 	).Result()
-}
 
-func NewEmailVerification(ctx context.Context, params user.RegisterDefaultParams) (id string, err error) {
-	paramsJson, err := json.Marshal(params)
-	if err != nil {
-		return
+	if err == redis.Nil {
+		err = ErrSessionNotFound
 	}
-
-	id = uuid.NewString()
-
-	err = client.Set(
-		ctx,
-		emailPrefix+id,
-		string(paramsJson),
-		time.Until(time.Now().Add(time.Minute*30)),
-	).Err()
-
-	return
-}
-
-func GetEmailVerification(ctx context.Context, id string) (params user.RegisterDefaultParams, err error) {
-	paramsJson, err := client.Get(
-		ctx,
-		emailPrefix+id,
-	).Result()
-	if err != nil {
-		return
-	}
-
-	err = json.Unmarshal([]byte(paramsJson), &params)
 	return
 }

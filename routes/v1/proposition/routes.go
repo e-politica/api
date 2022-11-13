@@ -9,4 +9,5 @@ import (
 func SetRoutes(r fiber.Router, tools routes.Tools) {
 	r.Post("/:id/like", handlers.PostLike(tools))
 	r.Post("/:id/comment", handlers.PostComment(tools))
+	r.Get("/:id/comments", handlers.GetComments(tools))
 }

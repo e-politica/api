@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/e-politica/api/pkg/session"
 	"github.com/e-politica/api/routes"
 	"github.com/e-politica/api/routes/v1/proposition/repository"
 	"github.com/gofiber/fiber/v2"
@@ -33,7 +34,8 @@ func PostComment(tools routes.Tools) fiber.Handler {
 		err := repository.Comment(c.Context(), tools.Db, access, id, comment)
 		if err != nil {
 			code := http.StatusBadRequest
-			if err != repository.ErrCommentDelayReached &&
+			if err != session.ErrSessionNotFound &&
+				err != repository.ErrCommentDelayReached &&
 				err != repository.ErrPropositionNotFound {
 				tools.Logger.Error.Println(err)
 				err = errors.New("internal server error")

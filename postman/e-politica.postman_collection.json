@@ -1,0 +1,402 @@
+{
+	"info": {
+		"_postman_id": "dba1a62f-6592-4a3b-a46d-7bd938a01405",
+		"name": "e-politica",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "login",
+							"item": [
+								{
+									"name": "login google",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Cookie",
+												"value": "g_csrf_token=123",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "credential",
+													"value": "aaaaa",
+													"type": "text"
+												},
+												{
+													"key": "g_csrf_token",
+													"value": "123",
+													"type": "text"
+												}
+											]
+										},
+										"url": {
+											"raw": "http://localhost:8080/v1/user/login/google",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"v1",
+												"user",
+												"login",
+												"google"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "login default",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Cookie",
+												"value": "g_csrf_token=123",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"email\": \"marola4@gmail.com\",\n    \"password\": \"123\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8080/v1/user/login",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"v1",
+												"user",
+												"login"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "register",
+							"item": [
+								{
+									"name": "register default",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Marola Mania\",\n    \"email\": \"guilhermedemarchi13@gmail.com\",\n    \"password\": \"aaa\",\n    \"picture\": \"aa\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:8080/v1/user/register",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "8080",
+											"path": [
+												"v1",
+												"user",
+												"register"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "change",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Marola joana\",\n    \"password\": \"123\",\n    \"new_password\": \"123\",\n    \"picture\": \"bb\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/v1/user",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get follows",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/v1/user/follows?page=1&limit=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"user",
+										"follows"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "leave",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/v1/user/leave",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"user",
+										"leave"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "politician",
+					"item": [
+						{
+							"name": "follow",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/v1/politician/:id/follow",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"politician",
+										":id",
+										"follow"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "125"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "proposition",
+					"item": [
+						{
+							"name": "like",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/v1/proposition/:id/like",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"proposition",
+										":id",
+										"like"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "15754"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "comment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\"ola marilene\"",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8080/v1/proposition/:id/comment",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"proposition",
+										":id",
+										"comment"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "15754"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get comments",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "b86029ec-2389-46bc-b9fc-dd89b73ace0c",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/v1/proposition/:id/comments?page=1&limit=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"v1",
+										"proposition",
+										":id",
+										"comments"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "2"
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "15754"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

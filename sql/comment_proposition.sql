@@ -1,5 +1,6 @@
 CREATE TABLE comment_proposition
 (
+    cp_id uuid PRIMARY KEY default uuid_generate_v4(),
     cp_user_id uuid NOT NULL,
     cp_proposition_id VARCHAR NOT NULL,
     cp_comment VARCHAR(200) NOT NULL,

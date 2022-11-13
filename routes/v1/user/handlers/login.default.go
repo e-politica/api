@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/e-politica/api/models/v1/user"
+	"github.com/e-politica/api/pkg/session"
 	"github.com/e-politica/api/routes"
 	"github.com/e-politica/api/routes/v1/user/repository"
 	"github.com/gofiber/fiber/v2"
@@ -22,10 +23,11 @@ func PostLoginDefault(tools routes.Tools) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		session, err := repository.LoginDefault(c.Context(), tools.Db, params)
+		userSession, err := repository.LoginDefault(c.Context(), tools.Db, params)
 		if err != nil {
 			code := http.StatusBadRequest
-			if err != repository.ErrInexistentAccount &&
+			if err != session.ErrSessionNotFound &&
+				err != repository.ErrInexistentAccount &&
 				err != repository.ErrPasswordsDontMatch {
 				tools.Logger.Error.Println(err)
 				err = errors.New("internal server error")
@@ -34,6 +36,6 @@ func PostLoginDefault(tools routes.Tools) fiber.Handler {
 			return c.Status(code).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(http.StatusOK).JSON(session)
+		return c.Status(http.StatusOK).JSON(userSession)
 	}
 }
