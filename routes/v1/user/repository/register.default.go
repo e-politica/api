@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/e-politica/api/models/v1/user"
+	"github.com/e-politica/api/pkg/crypto"
 	"github.com/e-politica/api/pkg/database"
 	"github.com/e-politica/api/pkg/session"
 )
@@ -13,8 +14,8 @@ var (
 	ErrExistentAccount = errors.New("the requested account already exists")
 )
 
-func RegisterDefault(ctx context.Context, db *database.Db, params user.RegisterDefault) (sess session.Session, err error) {
-	found, err := isUserRegistered(db, *params.Email)
+func RegisterDefault(ctx context.Context, db *database.Db, params user.RegisterDefaultParams) (sess session.Session, err error) {
+	found, err := isUserRegistered(db, params.Email)
 	if err != nil {
 		return
 	}
@@ -33,20 +34,25 @@ func RegisterDefault(ctx context.Context, db *database.Db, params user.RegisterD
 	userId, err := insertUserTx(
 		*db.Ctx,
 		tx,
-		*params.Name,
-		*params.Email,
-		*params.Picture,
+		params.Name,
+		params.Email,
+		params.Picture,
 		"default",
 	)
 	if err != nil {
 		return
 	}
 
-	err = insertDefaultAccount(
+	password, err := crypto.HashPassword(params.Password)
+	if err != nil {
+		return
+	}
+
+	err = insertDefaultAccountTx(
 		*db.Ctx,
 		tx,
 		userId,
-		*params.Password,
+		password,
 	)
 	if err != nil {
 		return

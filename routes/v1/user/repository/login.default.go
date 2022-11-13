@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/e-politica/api/models/v1/user"
+	"github.com/e-politica/api/pkg/crypto"
 	"github.com/e-politica/api/pkg/database"
 	"github.com/e-politica/api/pkg/session"
 	"github.com/go-redis/redis/v8"
@@ -15,8 +16,8 @@ var (
 	ErrPasswordsDontMatch = errors.New("passwords do not match")
 )
 
-func LoginDefault(ctx context.Context, db *database.Db, params user.LoginDefault) (sess session.Session, err error) {
-	found, err := isUserRegistered(db, *params.Email)
+func LoginDefault(ctx context.Context, db *database.Db, params user.LoginDefaultParams) (sess session.Session, err error) {
+	found, err := isUserRegistered(db, params.Email)
 	if err != nil {
 		return
 	}
@@ -26,7 +27,7 @@ func LoginDefault(ctx context.Context, db *database.Db, params user.LoginDefault
 		return
 	}
 
-	userId, err := getUserId(db, *params.Email)
+	userId, err := getUserId(db, params.Email)
 	if err != nil {
 		return
 	}
@@ -36,7 +37,7 @@ func LoginDefault(ctx context.Context, db *database.Db, params user.LoginDefault
 		return
 	}
 
-	if *params.Password != password {
+	if !crypto.CheckPasswordHash(params.Password, password) {
 		err = ErrPasswordsDontMatch
 		return
 	}

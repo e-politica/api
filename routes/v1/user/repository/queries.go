@@ -96,7 +96,7 @@ func insertUserTx(ctx context.Context, tx pgx.Tx, name, email, pictureUrl, accou
 	return
 }
 
-func insertDefaultAccount(ctx context.Context, tx pgx.Tx, userId, password string) error {
+func insertDefaultAccountTx(ctx context.Context, tx pgx.Tx, userId, password string) error {
 	query := `
 	INSERT INTO default_account (
 		df_account_user_id,

@@ -1,7 +1,7 @@
-CREATE TABLE user_project
+CREATE TABLE user_proposition
 (
-    up_user_id uuid NOT NULL 
-    up_project_id VARCHAR NOT NULL 
+    up_user_id uuid NOT NULL,
+    up_proposition_id VARCHAR NOT NULL, 
 
      CONSTRAINT up_fk_user    
         FOREIGN KEY(up_user_id)

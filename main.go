@@ -19,11 +19,9 @@ func main() {
 	defer db.Conn.Close(*db.Ctx)
 	go db.LoopCheckConnection()
 
-	logger := log.NewLogger(os.Stdout)
-
 	tools := routes.Tools{
 		Db:     db,
-		Logger: logger,
+		Logger: log.NewLogger(os.Stdout),
 	}
 
 	app := fiber.New(fiber.Config{})

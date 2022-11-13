@@ -10,9 +10,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func PostRegisterDefault(tools routes.Tools) fiber.Handler {
+func PutChangeInfo(tools routes.Tools) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var params user.RegisterDefaultParams
+		access := c.Get("Authorization")
+		if access == "" {
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide 'Authorization' header"})
+		}
+
+		var params user.ChangeInfoParams
 		if err := c.BodyParser(&params); err != nil {
 			tools.Logger.Error.Println(err)
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "could not parse request body"})
@@ -22,10 +27,11 @@ func PostRegisterDefault(tools routes.Tools) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		session, err := repository.RegisterDefault(c.Context(), tools.Db, params)
+		err := repository.ChangeInfo(c.Context(), tools.Db, access, params)
 		if err != nil {
 			code := http.StatusBadRequest
-			if err != repository.ErrExistentAccount {
+			if err != repository.ErrNotDefaultAccount &&
+				err != repository.ErrPasswordsDontMatch {
 				tools.Logger.Error.Println(err)
 				err = errors.New("internal server error")
 				code = http.StatusInternalServerError
@@ -33,6 +39,6 @@ func PostRegisterDefault(tools routes.Tools) fiber.Handler {
 			return c.Status(code).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		return c.Status(http.StatusCreated).JSON(session)
+		return c.SendStatus(http.StatusOK)
 	}
 }
