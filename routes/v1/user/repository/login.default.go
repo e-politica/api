@@ -8,7 +8,6 @@ import (
 	"github.com/e-politica/api/pkg/crypto"
 	"github.com/e-politica/api/pkg/database"
 	"github.com/e-politica/api/pkg/session"
-	"github.com/go-redis/redis/v8"
 )
 
 var (
@@ -43,7 +42,7 @@ func LoginDefault(ctx context.Context, db *database.Db, params user.LoginDefault
 	}
 
 	sess, err = session.GetSession(ctx, userId)
-	if err == redis.Nil {
+	if err == session.ErrSessionNotFound {
 		return session.NewSession(ctx, userId)
 	}
 

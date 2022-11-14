@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 
 	"github.com/e-politica/api/config"
 	"github.com/e-politica/api/pkg/database"
@@ -16,7 +17,7 @@ import (
 func main() {
 	ctx := context.Background()
 	db := database.New(&ctx)
-	defer db.Conn.Close(*db.Ctx)
+	defer db.Conn.Close()
 	go db.LoopCheckConnection()
 
 	tools := routes.Tools{
@@ -25,6 +26,7 @@ func main() {
 	}
 
 	app := fiber.New(fiber.Config{})
+	app.Use(cors.New())
 
 	// ------------------* Temporary *------------------ //
 	app.Get("/", func(c *fiber.Ctx) error {

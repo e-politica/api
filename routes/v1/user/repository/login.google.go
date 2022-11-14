@@ -10,7 +10,6 @@ import (
 	"github.com/e-politica/api/config"
 	"github.com/e-politica/api/pkg/database"
 	"github.com/e-politica/api/pkg/session"
-	"github.com/go-redis/redis/v8"
 	goauth2 "google.golang.org/api/oauth2/v2"
 	"google.golang.org/api/option"
 )
@@ -101,7 +100,7 @@ func getUserSession(ctx context.Context, db *database.Db, email string) (sess se
 	}
 
 	sess, err = session.GetSession(ctx, userId)
-	if err == redis.Nil {
+	if err == session.ErrSessionNotFound {
 		return session.NewSession(ctx, userId)
 	}
 

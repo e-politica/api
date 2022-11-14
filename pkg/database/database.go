@@ -11,6 +11,7 @@ import (
 	"github.com/e-politica/api/config"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 var ErrDatabaseDown = errors.New("database down")
@@ -21,7 +22,7 @@ type Db struct {
 	ReopenConn chan bool
 	IsWaiting  bool
 	mu         sync.Mutex
-	Conn       *pgx.Conn
+	Conn       *pgxpool.Pool
 }
 
 func New(ctx *context.Context) *Db {
@@ -46,8 +47,8 @@ func (db *Db) Connect() (err error) {
 			":" + config.DbPort +
 			"/" + config.DbName
 
-		var conn *pgx.Conn
-		conn, err = pgx.Connect(*db.Ctx, url)
+		var conn *pgxpool.Pool
+		conn, err = pgxpool.Connect(*db.Ctx, url)
 		db.Conn = conn
 	})
 	return
