@@ -27,14 +27,16 @@ var client = redis.NewClient(&redis.Options{
 
 type Session struct {
 	AccessToken string    `json:"access_token"`
+	UserId      string    `json:"user_id"`
 	Expiration  time.Time `json:"expiration"`
 }
 
 func NewSession(ctx context.Context, userId string) (session Session, err error) {
-	expiration := time.Now().Add(config.RedisSessionDurationHour)
+	expiration := time.Now().Add(time.Hour * config.RedisSessionDurationHour)
 
 	session = Session{
 		AccessToken: uuid.NewString(),
+		UserId:      userId,
 		Expiration:  expiration,
 	}
 
@@ -47,7 +49,7 @@ func NewSession(ctx context.Context, userId string) (session Session, err error)
 		ctx,
 		userIdPrefix+userId,
 		string(sessionJson),
-		time.Until(expiration),
+		time.Hour*config.RedisSessionDurationHour,
 	).Err()
 	if err != nil {
 		return
@@ -57,7 +59,7 @@ func NewSession(ctx context.Context, userId string) (session Session, err error)
 		ctx,
 		accessTokenPrefix+session.AccessToken,
 		userId,
-		time.Until(expiration),
+		time.Hour*config.RedisSessionDurationHour,
 	).Err()
 
 	return

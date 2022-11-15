@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/e-politica/api/models/v1/proposition"
 	"github.com/e-politica/api/models/v1/user"
@@ -30,7 +29,6 @@ func GetComments(ctx context.Context, db *database.Db, propId string, offset, li
 	var userId, comment string
 	var userInfo user.PublicInfo
 	for rows.Next() {
-		fmt.Println(db.Conn.Ping(context.Background()))
 		if err = rows.Scan(&userId, &comment); err != nil {
 			return
 		}

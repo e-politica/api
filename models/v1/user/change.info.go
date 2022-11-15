@@ -12,7 +12,7 @@ type ChangeInfoParams struct {
 }
 
 func (r ChangeInfoParams) Validate() error {
-	if r.Name == "" || r.Picture == "" || r.NewPassword == "" {
+	if r.Name == "" && r.Picture == "" && r.NewPassword == "" {
 		return errors.New("must provide at least 1 field")
 	}
 

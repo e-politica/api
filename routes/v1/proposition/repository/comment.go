@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/e-politica/api/config"
 	"github.com/e-politica/api/pkg/database"
 	"github.com/e-politica/api/pkg/session"
 	"github.com/jackc/pgx/v4"
@@ -48,7 +49,7 @@ func Comment(ctx context.Context, db *database.Db, accessToken, propId, comment 
 		return
 	}
 
-	if err == nil && time.Since(timestamp) < time.Hour*24 {
+	if err == nil && time.Since(timestamp) < time.Hour*config.CommentDelayHour {
 		err = ErrCommentDelayReached
 		return
 	}

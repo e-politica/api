@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	ServerPort = env.Get("SERVER_PORT", "8080")
+	ServerPort       = env.Get("SERVER_PORT", "8080")
+	CommentDelayHour = env.Get[time.Duration]("COMMENT_DELAY_HOUR", 0)
 
 	DbHost         = env.Get("DB_HOST", "localhost")
 	DbName         = env.Get("DB_NAME", "epolitica")
@@ -21,7 +22,7 @@ var (
 	RedisAddr                = env.Get("REDIS_ADDR", "localhost:6379")
 	RedisPassword            = env.Get("REDIS_PASSWORD", "")
 	RedisDB                  = env.Get("REDIS_DB", 0)
-	RedisSessionDurationHour = time.Hour * time.Duration(env.Get("REDIS_SESSION_DURATION_HOUR", 24))
+	RedisSessionDurationHour = env.Get[time.Duration]("REDIS_SESSION_DURATION_HOUR", 24)
 
 	GoogleClientSecret = env.Get("GOOGLE_CLIENT_SECRET", "")
 )

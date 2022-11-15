@@ -1,9 +1,7 @@
 package handlers
 
 import (
-	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,7 +12,6 @@ import (
 )
 
 func GetComments(tools routes.Tools) fiber.Handler {
-	fmt.Println(tools.Db.Conn.Ping(context.Background()))
 	return func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		if id == "" {
