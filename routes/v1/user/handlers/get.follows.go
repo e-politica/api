@@ -15,24 +15,24 @@ func GetFollows(tools routes.Tools) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		access := c.Get("Authorization")
 		if access == "" {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide 'Authorization' header"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide 'Authorization' header"})
 		}
 
 		rawPage := c.Query("page", "1")
 		page, err := strconv.Atoi(rawPage)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide a valid url query 'page'"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide a valid url query 'page'"})
 		}
 
 		page--
 		if page < 0 {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "'page' url query must be >= 1"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "'page' url query must be >= 1"})
 		}
 
 		rawLimit := c.Query("limit", "15")
 		limit, err := strconv.Atoi(rawLimit)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide a valid url param 'limit'"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide a valid url param 'limit'"})
 		}
 
 		follows, err := repository.GetFollows(c.Context(), tools.Db, access, page*limit, limit)

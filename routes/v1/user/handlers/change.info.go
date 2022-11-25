@@ -15,13 +15,13 @@ func PutChangeInfo(tools routes.Tools) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		access := c.Get("Authorization")
 		if access == "" {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide 'Authorization' header"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide 'Authorization' header"})
 		}
 
 		var params user.ChangeInfoParams
 		if err := c.BodyParser(&params); err != nil {
 			tools.Logger.Error.Println(err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "could not parse request body"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "could not parse request body"})
 		}
 
 		if err := params.Validate(); err != nil {

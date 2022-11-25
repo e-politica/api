@@ -19,9 +19,6 @@ var (
 	DbReconnectSec = env.Get("DB_RECONNECT_SEC", 10)
 	DbWaitStart    = env.Get("DB_WAIT_START", true)
 
-	RedisAddr                = env.Get("REDIS_ADDR", "localhost:6379")
-	RedisPassword            = env.Get("REDIS_PASSWORD", "")
-	RedisDB                  = env.Get("REDIS_DB", 0)
 	RedisSessionDurationHour = env.Get[time.Duration]("REDIS_SESSION_DURATION_HOUR", 24)
 
 	GoogleClientSecret = env.Get("GOOGLE_CLIENT_SECRET", "")

@@ -19,11 +19,28 @@ const (
 
 var ErrSessionNotFound = errors.New("session not found")
 
-var client = redis.NewClient(&redis.Options{
-	Addr:     config.RedisAddr,
-	Password: config.RedisPassword,
-	DB:       config.RedisDB,
-})
+var client = NewRedis()
+
+type Redis struct {
+	m map[string]string
+}
+
+func NewRedis() *Redis {
+	return &Redis{m: make(map[string]string)}
+}
+
+func (r *Redis) Get(ctx context.Context, key string) (string, error) {
+	value, ok := r.m[key]
+	if !ok {
+		return "", redis.Nil
+	}
+	return value, nil
+}
+
+func (r *Redis) Set(ctx context.Context, key, value string, expiration time.Duration) error {
+	r.m[key] = value
+	return nil
+}
 
 type Session struct {
 	AccessToken string    `json:"access_token"`
@@ -50,7 +67,7 @@ func NewSession(ctx context.Context, userId string) (session Session, err error)
 		userIdPrefix+userId,
 		string(sessionJson),
 		time.Hour*config.RedisSessionDurationHour,
-	).Err()
+	)
 	if err != nil {
 		return
 	}
@@ -60,7 +77,7 @@ func NewSession(ctx context.Context, userId string) (session Session, err error)
 		accessTokenPrefix+session.AccessToken,
 		userId,
 		time.Hour*config.RedisSessionDurationHour,
-	).Err()
+	)
 
 	return
 }
@@ -69,7 +86,7 @@ func GetSession(ctx context.Context, userId string) (session Session, err error)
 	rawSession, err := client.Get(
 		ctx,
 		userIdPrefix+userId,
-	).Result()
+	)
 	if err != nil {
 		if err == redis.Nil {
 			err = ErrSessionNotFound
@@ -85,7 +102,7 @@ func GetUserId(ctx context.Context, accessToken string) (userId string, err erro
 	userId, err = client.Get(
 		ctx,
 		accessTokenPrefix+accessToken,
-	).Result()
+	)
 
 	if err == redis.Nil {
 		err = ErrSessionNotFound

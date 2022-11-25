@@ -13,7 +13,7 @@ func GetPublicInfo(tools routes.Tools) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		if id == "" {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide url param 'id'"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide url param 'id'"})
 		}
 
 		info, err := repository.GetPublicInfo(c.Context(), tools.Db, id)

@@ -28,12 +28,6 @@ func main() {
 	app := fiber.New(fiber.Config{})
 	app.Use(cors.New())
 
-	// ------------------* Temporary *------------------ //
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendFile("../layout_rascunho/rascunho2/login.html")
-	})
-	// ------------------* Temporary *------------------ //
-
 	v1.SetRoutes(app.Group("/v1"), tools)
 
 	err := app.Listen(":" + config.ServerPort)

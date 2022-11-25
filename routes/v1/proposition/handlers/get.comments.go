@@ -21,18 +21,18 @@ func GetComments(tools routes.Tools) fiber.Handler {
 		rawPage := c.Query("page", "1")
 		page, err := strconv.Atoi(rawPage)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide a valid url query 'page'"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide a valid url query 'page'"})
 		}
 
 		page--
 		if page < 0 {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "'page' url query must be >= 1"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "'page' url query must be >= 1"})
 		}
 
 		rawLimit := c.Query("limit", "15")
 		limit, err := strconv.Atoi(rawLimit)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "must provide a valid url param 'limit'"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "must provide a valid url param 'limit'"})
 		}
 
 		comments, err := repository.GetComments(c.Context(), tools.Db, id, page*limit, limit)

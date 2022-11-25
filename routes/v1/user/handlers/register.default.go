@@ -16,7 +16,7 @@ func PostRegisterDefault(tools routes.Tools) fiber.Handler {
 		var params user.RegisterDefaultParams
 		if err := c.BodyParser(&params); err != nil {
 			tools.Logger.Error.Println(err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "could not parse request body"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "could not parse request body"})
 		}
 
 		if err := params.Validate(); err != nil {

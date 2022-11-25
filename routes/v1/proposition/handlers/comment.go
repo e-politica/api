@@ -24,11 +24,11 @@ func PostComment(tools routes.Tools) fiber.Handler {
 
 		var comment string
 		if err := c.BodyParser(&comment); err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		if len(comment) > 200 {
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "max comment lenght reached"})
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "max comment lenght reached"})
 		}
 
 		err := repository.Comment(c.Context(), tools.Db, access, id, comment)
